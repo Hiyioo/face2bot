@@ -36,7 +36,7 @@ async function predictWebcam(video, canvas) {
   const now = Date.now()
   const faceResult = await faceLandmarker.detectForVideo(video, now)
   const currentFaceLandmarks = faceResult ? faceResult.faceLandmarks : null
-  faceLandmarks.value = currentFaceLandmarks
+  faceLandmarks.value = currentFaceLandmarks[0]
 
   const ctx = canvas.getContext('2d')
   if (!ctx) {
