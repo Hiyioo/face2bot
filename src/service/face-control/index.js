@@ -1,9 +1,11 @@
 import { sendCommand } from '@/service/serial'
 import { faceLandmarks } from '@/service/vision'
-import { onMounted, watchEffect } from 'vue'
+import { watchEffect } from 'vue'
 
-// === 1. 常量 & 索引 ===
 const IDX = Object.freeze({
+  leftEyeOuter: 359,
+  rightEyeOuter: 130,
+
   leftEyebrow: 336,
   leftEyebrowCorner: 300,
   rightEyebrow: 107,
@@ -11,7 +13,6 @@ const IDX = Object.freeze({
   middleEyebrow: 8,
 
   leftEyeball: 473,
-  leftEyeOuter: 263,
 
   leftUpperEyelid: 386,
   leftLowerEyelid: 374,
@@ -23,92 +24,135 @@ const IDX = Object.freeze({
   rightUpperMouth: 163,
   rightLowerMouth: 106,
 
+  rightUpperCheek: 207,
+  rightLowerCheek: 214,
+  leftUpperCheek: 427,
+  leftLowerCheek: 434,
+
   noseTip: 4,
   upperLip: 11,
   lowerLip: 16,
+  zero: 0,
 })
 
-// === 2. 扁平化伺服配置 ===
 const servoConfigs = [
-  // —— 眉毛 —— （测 Y 轴，相对 middleEyebrow）
-  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 5, closed: 70, open: 110, dMin: 0.021, dMax: 0.025, prefix: 'servo_debug' },
-  { idx: 'leftEyebrowCorner', ref: 'middleEyebrow', axis: 'y', pin: 7, closed: 90, open: 140, dMin: 0.022, dMax: 0.030, prefix: 'servo_debug' },
-  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 4, closed: 80, open: 50, dMin: 0.021, dMax: 0.025, prefix: 'servo_debug' },
-  { idx: 'rightEyebrowCorner', ref: 'middleEyebrow', axis: 'y', pin: 6, closed: 60, open: 110, dMin: 0.022, dMax: 0.030, prefix: 'servo_debug' },
+  // 眉毛
+  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 5, closed: 70, open: 110, dMin: 0.218, dMax: 0.258, prefix: 'servo_debug' },
+  // leftEyebrowConner 随着 leftEyebrow 一起动
+  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 7, closed: 140, open: 90, dMin: 0.218, dMax: 0.258, prefix: 'servo_debug' },
+  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 4, closed: 80, open: 50, dMin: 0.218, dMax: 0.258, prefix: 'servo_debug' },
+  // rightEyebrowConner 随着 rightEyebrow 一起动
+  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 6, closed: 60, open: 110, dMin: 0.218, dMax: 0.258, prefix: 'servo_debug' },
 
-  // —— 眼球 —— （水平测 x ，垂直测 y，相对 leftEyeOuter）
-  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'x', pin: 2, closed: 40, open: 118, dMin: -0.020, dMax: -0.012, prefix: 'servo_debug' },
-  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'y', pin: 3, closed: 90, open: 138, dMin: -0.010, dMax: -0.030, prefix: 'servo_debug' },
+  // 眼部
+  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'x', pin: 2, closed: 118, open: 40, dMin: 0.186, dMax: 0.312, prefix: 'servo_debug' },
+  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'y', pin: 3, closed: 90, open: 138, dMin: 0.132, dMax: 0.174, prefix: 'servo_debug' },
+  { idx: 'leftLowerEyelid', ref: 'leftUpperEyelid', axis: 'y', pin: 11, closed: 70, open: 12, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
+  { idx: 'leftUpperEyelid', ref: 'leftLowerEyelid', axis: 'y', pin: 10, closed: 50, open: 170, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
+  { idx: 'rightLowerEyelid', ref: 'rightUpperEyelid', axis: 'y', pin: 13, closed: 10, open: 50, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
+  { idx: 'rightUpperEyelid', ref: 'rightLowerEyelid', axis: 'y', pin: 12, closed: 160, open: 10, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
 
-  // —— 眼皮 —— （测 Y 轴，下减上）
-  { idx: 'leftLowerEyelid', ref: 'leftUpperEyelid', axis: 'y', pin: 11, closed: 70, open: 12, dMin: 0.004, dMax: 0.016, prefix: 'servo_debug' },
-  { idx: 'leftUpperEyelid', ref: 'leftLowerEyelid', axis: 'y', pin: 10, closed: 50, open: 170, dMin: 0.004, dMax: 0.016, prefix: 'servo_debug' },
-  { idx: 'rightLowerEyelid', ref: 'rightUpperEyelid', axis: 'y', pin: 13, closed: 10, open: 50, dMin: 0.004, dMax: 0.016, prefix: 'servo_debug' },
-  { idx: 'rightUpperEyelid', ref: 'rightLowerEyelid', axis: 'y', pin: 12, closed: 160, open: 10, dMin: 0.004, dMax: 0.016, prefix: 'servo_debug' },
+  // mouth
+  // { idx: 'rightUpperMouth', ref: 'zero', axis: 'distance', pin: 6, closed: 57, open: 75, dMin: 0.31, dMax: 0.37, prefix: 'slave_debug' },
+  // { idx: 'rightLowerMouth', ref: 'zero', axis: 'distance', pin: 7, closed: 100, open: 70, dMin: 0.48, dMax: 0.6, prefix: 'slave_debug' },
+  // { idx: 'leftUpperMouth', ref: 'zero', axis: 'distance', pin: 8, closed: 100, open: 80, dMin: 0.3, dMax: 0.39, prefix: 'slave_debug' },
+  // { idx: 'leftLowerMouth', ref: 'zero', axis: 'distance', pin: 9, closed: 110, open: 140, dMin: 0.49, dMax: 0.7, prefix: 'slave_debug' },
 
-  // —— 嘴角 —— （2D 欧氏距离，相对 noseTip）
-  { idx: 'leftUpperMouth', ref: 'noseTip', axis: 'distance', pin: 6, closed: 75, open: 57, dMin: 0.064, dMax: 0.066, prefix: 'slave_debug' },
-  { idx: 'leftLowerMouth', ref: 'noseTip', axis: 'distance', pin: 7, closed: 70, open: 100, dMin: 0.117, dMax: 0.158, prefix: 'slave_debug' },
-  { idx: 'rightUpperMouth', ref: 'noseTip', axis: 'distance', pin: 8, closed: 100, open: 80, dMin: 0.068, dMax: 0.067, prefix: 'slave_debug' },
-  { idx: 'rightLowerMouth', ref: 'noseTip', axis: 'distance', pin: 9, closed: 110, open: 140, dMin: 0.119, dMax: 0.164, prefix: 'slave_debug' },
+  // cheek
+  // { idx: 'rightUpperCheek', ref: 'zero', axis: 'distance', pin: 3, closed: 20, open: 60, dMin: 0.58, dMax: 0.64, prefix: 'slave_debug' },
+  // { idx: 'rightLowerCheek', ref: 'zero', axis: 'distance', pin: 2, closed: 140, open: 60, dMin: 0.68, dMax: 0.73, prefix: 'slave_debug' },
+  // { idx: 'leftUpperCheek', ref: 'zero', axis: 'distance', pin: 5, closed: 160, open: 70, dMin: 0.54, dMax: 0.61, prefix: 'slave_debug' },
+  // { idx: 'leftLowerCheek', ref: 'zero', axis: 'distance', pin: 4, closed: 70, open: 160, dMin: 0.65, dMax: 0.75, prefix: 'slave_debug' },
 ]
 
-// === 3. 状态 & 节流 ===
-const lastAngles = Object.fromEntries(
-  servoConfigs.map(cfg => [cfg.pin, null]),
-)
+const lastAngles = Object.fromEntries(servoConfigs.map(c => [c.pin, null]))
+let lastJawState = null
 let lastSentTime = 0
 
-// === 4. 工具函数 ===
 const clamp = (v, min = 0, max = 1) => Math.max(min, Math.min(max, v))
+
+const delay = ms => new Promise(r => setTimeout(r, ms))
+
 function map(v, iMin, iMax, oMin, oMax) {
   const t = clamp((v - iMin) / (iMax - iMin))
   return oMin + t * (oMax - oMin)
 }
+
 function distance2D(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y)
 }
 
-// === 5. 主循环：统一遍历所有配置 ===
+// 逆时针绕 center 旋转 point
+function rotatePoint(point, center, angle) {
+  const x0 = point.x - center.x
+  const y0 = point.y - center.y
+  const cosA = Math.cos(-angle)
+  const sinA = Math.sin(-angle)
+  return {
+    x: x0 * cosA - y0 * sinA + center.x,
+    y: x0 * sinA + y0 * cosA + center.y,
+  }
+}
+
 watchEffect(() => {
   const lm = faceLandmarks.value
-  if (!lm || lm.length < 468) {
+  if (!lm || lm.length < 478) {
     return
   }
 
   const now = Date.now()
-  if (now - lastSentTime < 20) {
+  if (now - lastSentTime < 15) {
     return
   }
   lastSentTime = now
 
-  servoConfigs.forEach((cfg) => {
-    const p1 = lm[IDX[cfg.idx]]
-    const p2 = lm[IDX[cfg.ref]]
-    if (!p1 || !p2) {
-      return
+  // 计算 Roll 角
+  const leftEye = lm[IDX.leftEyeOuter]
+  const rightEye = lm[IDX.rightEyeOuter]
+  const roll = Math.atan2(
+    rightEye.y - leftEye.y,
+    rightEye.x - leftEye.x,
+  )
+  // 计算基准距离，用于标准化
+  const dRef = distance2D(leftEye, rightEye)
+  // 旋转中心：鼻尖
+  const center = lm[IDX.noseTip]
+
+  ;(async () => {
+    for (const cfg of servoConfigs) {
+      let p1 = lm[IDX[cfg.idx]]
+      let p2 = lm[IDX[cfg.ref]]
+      if (!p1 || !p2) {
+        continue
+      }
+
+      p1 = rotatePoint(p1, center, roll)
+      p2 = rotatePoint(p2, center, roll)
+
+      const rawDelta = cfg.axis === 'distance' ? distance2D(p1, p2) : Math.abs(p1[cfg.axis] - p2[cfg.axis])
+      const normDelta = rawDelta / dRef
+      const m = 0.001
+      const b = 0.102
+      const normCorrected = normDelta - m * roll + b
+      // if (cfg.idx === 'rightEyebrow') {
+      //   console.log(normCorrected)
+      // }
+
+      const angle = Math.round(map(normCorrected, cfg.dMin, cfg.dMax, cfg.closed, cfg.open))
+      if (angle !== lastAngles[cfg.pin]) {
+        sendCommand(`${cfg.prefix}:${cfg.pin},${angle}`)
+        lastAngles[cfg.pin] = angle
+        await delay(1)
+      }
     }
 
-    // 计算 delta
-    const delta = cfg.axis === 'distance'
-      ? distance2D(p1, p2)
-      : Math.abs(p1[cfg.axis] - p2[cfg.axis])
-
-    const angle = Math.round(
-      map(delta, cfg.dMin, cfg.dMax, cfg.closed, cfg.open),
-    )
-    if (angle === lastAngles[cfg.pin]) {
-      return
+    // 下巴张合
+    const lipDelta = lm[IDX.lowerLip].y - lm[IDX.upperLip].y
+    const jawState = lipDelta >= 0.07 ? 'jaw_open' : 'jaw_close'
+    if (jawState !== lastJawState) {
+      sendCommand(jawState)
+      lastJawState = jawState
+      await delay(1)
     }
-
-    sendCommand(`${cfg.prefix}:${cfg.pin},${angle}`)
-    lastAngles[cfg.pin] = angle
-  })
-
-  // —— 额外：下巴张合 ——
-  const lipDelta = lm[IDX.lowerLip].y - lm[IDX.upperLip].y
-  sendCommand(lipDelta >= 0.07 ? 'jaw_open' : 'jaw_close')
+  })()
 })
-
-// === 6. 初始化 ===
-onMounted(() => sendCommand('reset'))
