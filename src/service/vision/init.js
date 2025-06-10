@@ -30,7 +30,6 @@ export async function initializeVision() {
       runningMode: 'VIDEO',
       minTrackingConfidence: config.detection.minConfidence,
       outputFaceBlendshapes: false, // 根据需要可设为 true
-      outputFacialTransformationMatrix: false,
     })
 
     console.warn('🧠 FaceLandmarker initialized')
