@@ -53,16 +53,16 @@ const servoConfigs = [
   { idx: 'rightUpperEyelid', ref: 'rightLowerEyelid', axis: 'y', pin: 12, closed: 160, open: 10, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
 
   // mouth
-  // { idx: 'rightUpperMouth', ref: 'zero', axis: 'distance', pin: 6, closed: 57, open: 75, dMin: 0.31, dMax: 0.37, prefix: 'slave_debug' },
-  // { idx: 'rightLowerMouth', ref: 'zero', axis: 'distance', pin: 7, closed: 100, open: 70, dMin: 0.48, dMax: 0.6, prefix: 'slave_debug' },
-  // { idx: 'leftUpperMouth', ref: 'zero', axis: 'distance', pin: 8, closed: 100, open: 80, dMin: 0.3, dMax: 0.39, prefix: 'slave_debug' },
-  // { idx: 'leftLowerMouth', ref: 'zero', axis: 'distance', pin: 9, closed: 110, open: 140, dMin: 0.49, dMax: 0.7, prefix: 'slave_debug' },
+  { idx: 'rightUpperMouth', ref: 'zero', axis: 'distance', pin: 6, closed: 57, open: 75, dMin: 0.31, dMax: 0.37, prefix: 'slave_debug' },
+  { idx: 'rightLowerMouth', ref: 'zero', axis: 'distance', pin: 7, closed: 100, open: 70, dMin: 0.48, dMax: 0.6, prefix: 'slave_debug' },
+  { idx: 'leftUpperMouth', ref: 'zero', axis: 'distance', pin: 8, closed: 100, open: 80, dMin: 0.3, dMax: 0.39, prefix: 'slave_debug' },
+  { idx: 'leftLowerMouth', ref: 'zero', axis: 'distance', pin: 9, closed: 110, open: 140, dMin: 0.49, dMax: 0.7, prefix: 'slave_debug' },
 
   // cheek
-  // { idx: 'rightUpperCheek', ref: 'zero', axis: 'distance', pin: 3, closed: 20, open: 60, dMin: 0.58, dMax: 0.64, prefix: 'slave_debug' },
-  // { idx: 'rightLowerCheek', ref: 'zero', axis: 'distance', pin: 2, closed: 140, open: 60, dMin: 0.68, dMax: 0.73, prefix: 'slave_debug' },
-  // { idx: 'leftUpperCheek', ref: 'zero', axis: 'distance', pin: 5, closed: 160, open: 70, dMin: 0.54, dMax: 0.61, prefix: 'slave_debug' },
-  // { idx: 'leftLowerCheek', ref: 'zero', axis: 'distance', pin: 4, closed: 70, open: 160, dMin: 0.65, dMax: 0.75, prefix: 'slave_debug' },
+  { idx: 'rightUpperCheek', ref: 'zero', axis: 'distance', pin: 3, closed: 20, open: 60, dMin: 0.58, dMax: 0.64, prefix: 'slave_debug' },
+  { idx: 'rightLowerCheek', ref: 'zero', axis: 'distance', pin: 2, closed: 140, open: 60, dMin: 0.68, dMax: 0.73, prefix: 'slave_debug' },
+  { idx: 'leftUpperCheek', ref: 'zero', axis: 'distance', pin: 5, closed: 160, open: 70, dMin: 0.54, dMax: 0.61, prefix: 'slave_debug' },
+  { idx: 'leftLowerCheek', ref: 'zero', axis: 'distance', pin: 4, closed: 70, open: 160, dMin: 0.65, dMax: 0.75, prefix: 'slave_debug' },
 ]
 
 const lastAngles = Object.fromEntries(servoConfigs.map(c => [c.pin, null]))

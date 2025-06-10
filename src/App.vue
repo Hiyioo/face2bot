@@ -1,7 +1,9 @@
 <script setup>
 import { getVideoDevices, startCamera, stopCamera } from '@/service/camera'
+import { connect, disconnect, sendCommand } from '@/service/serial'
 import { startFaceCapture, stopFaceCapture } from '@/service/vision'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import '@/service/face-control'
 
 const showModal = ref(false)
 
@@ -15,6 +17,8 @@ const selectRef = ref(null)
 const selectedDeviceId = ref(null)
 const videoDevices = ref([])
 let resizeObserver = null
+
+const commandText = ref('')
 
 /**
  * 播放按钮点击
@@ -50,6 +54,11 @@ function adjustCanvasSize() {
     canvasRef.value.width = videoRef.value.videoWidth
     canvasRef.value.height = videoRef.value.videoHeight
   }
+}
+
+async function connectSerial() {
+  await connect(200000)
+  await sendCommand('reset')
 }
 
 function observeVideoSize() {
@@ -161,6 +170,7 @@ onBeforeUnmount(() => {
 
     <!-- 控制按钮 -->
     <v-row justify="center" class="controls">
+      <!-- <span>{{ debugText }}</span> -->
       <v-btn
         v-if="!camRunning"
         color="primary"
@@ -169,7 +179,7 @@ onBeforeUnmount(() => {
         @click="playBtnOnclick"
       >
         <v-icon left>
-          {{ 'mdi-play' }}
+          mdi-play
         </v-icon>
       </v-btn>
       <v-btn
@@ -180,29 +190,50 @@ onBeforeUnmount(() => {
         @click="stopPlayBtnOnclick"
       >
         <v-icon left>
-          {{ 'mdi-stop' }}
+          mdi-stop
         </v-icon>
       </v-btn>
-      <v-btn
-        color="secondary"
-        large
-        rounded
-        @click="showModal = !showModal"
-      >
+      <v-btn color="secondary" large rounded @click="showModal = !showModal">
         <v-icon left>
-          {{ 'mdi-cog' }}
+          mdi-cog
         </v-icon>
       </v-btn>
-      <v-btn
-        large
-        rounded
-      >
+      <v-btn large rounded @click="connectSerial">
         <v-icon left>
-          {{ 'mdi-power-plug' }}
+          mdi-ethernet
         </v-icon>
+        打开串口
+      </v-btn>
+      <v-btn large rounded @click="disconnect">
+        <v-icon left>
+          mdi-ethernet-off
+        </v-icon>
+        关闭串口
       </v-btn>
     </v-row>
-    <!-- <settingsModal v-model:is-open="showModal" /> -->
+
+    <!-- 串口命令输入 & 发送 -->
+    <v-row justify="center" class="mt-4">
+      <v-col cols="12" md="6" lg="4">
+        <v-text-field
+          v-model="commandText"
+          label="串口命令"
+          placeholder="输入如 on、eyes_open、reset..."
+          dense
+          outlined
+        />
+      </v-col>
+      <v-col cols="12" md="2" lg="2">
+        <v-btn
+          color="primary"
+          large
+          block
+          @click="sendCommand(commandText)"
+        >
+          发送
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
