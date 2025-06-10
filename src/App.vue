@@ -6,49 +6,32 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import '@/service/face-control'
 
 const showModal = ref(false)
-
-// 本组件局部管理 camera 运行状态
 const camRunning = ref(false)
-
 const videoRef = ref(null)
 const canvasRef = ref(null)
 const selectRef = ref(null)
-
 const selectedDeviceId = ref(null)
 const videoDevices = ref([])
 let resizeObserver = null
 
-const commandText = ref('')
-
-/**
- * 播放按钮点击
- */
 async function playBtnOnclick() {
   if (!selectedDeviceId.value) {
     console.warn('⚠️ 未选择摄像头设备')
     return
   }
-
-  // 启动摄像头
   const stream = await startCamera(selectedDeviceId.value)
   if (!stream) {
     console.error('❌ 摄像头启动失败')
     return
   }
-
   videoRef.value.srcObject = stream
   camRunning.value = true
-
-  // 视频元数据加载完成后，调整 canvas 大小并启动人脸检测
   videoRef.value.onloadedmetadata = () => {
     adjustCanvasSize()
     startFaceCapture(videoRef.value, canvasRef.value)
   }
 }
 
-/**
- * 调整 Canvas 大小匹配 Video
- */
 function adjustCanvasSize() {
   if (videoRef.value && canvasRef.value) {
     canvasRef.value.width = videoRef.value.videoWidth
@@ -65,19 +48,14 @@ function observeVideoSize() {
   if (!videoRef.value) {
     return
   }
-
-  resizeObserver = new ResizeObserver(() => {
-    adjustCanvasSize()
-  })
+  resizeObserver = new ResizeObserver(() => adjustCanvasSize())
   resizeObserver.observe(videoRef.value)
 }
 
 function stopPlayBtnOnclick() {
-  if (!selectedDeviceId.value) {
-    console.warn('⚠️ 没有摄像头正在运行')
+  if (!camRunning.value) {
     return
   }
-
   stopFaceCapture(canvasRef.value)
   stopCamera(selectedDeviceId.value)
   camRunning.value = false
@@ -86,20 +64,15 @@ function stopPlayBtnOnclick() {
 async function handleChange(newId) {
   const oldId = selectedDeviceId.value
   selectedDeviceId.value = newId
-
   if (camRunning.value) {
-    // 停止旧摄像头和检测
     stopFaceCapture(canvasRef.value)
     stopCamera(oldId)
-
-    // 启动新摄像头并继续检测
     const stream = await startCamera(newId)
     if (!stream) {
       console.error('❌ 摄像头启动失败')
       return
     }
     videoRef.value.srcObject = stream
-
     videoRef.value.onloadedmetadata = () => {
       adjustCanvasSize()
       startFaceCapture(videoRef.value, canvasRef.value)
@@ -107,26 +80,24 @@ async function handleChange(newId) {
   }
 }
 
-onMounted(async () => {
-  // 获取可用摄像头设备列表
+async function refreshDevices() {
   videoDevices.value = await getVideoDevices()
+}
 
-  // 默认选中第一个设备
+onMounted(async () => {
+  videoDevices.value = await getVideoDevices()
   if (videoDevices.value.length > 0) {
     selectedDeviceId.value = videoDevices.value[0].deviceId
   }
-
   observeVideoSize()
+  window.sendCommand = sendCommand
 })
 
 onBeforeUnmount(() => {
-  // 停止 ResizeObserver
   if (resizeObserver && videoRef.value) {
     resizeObserver.unobserve(videoRef.value)
     resizeObserver = null
   }
-
-  // 如果摄像头仍在运行，则停止
   if (camRunning.value && selectedDeviceId.value) {
     stopFaceCapture(canvasRef.value)
     stopCamera(selectedDeviceId.value)
@@ -135,10 +106,57 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <v-container fluid class="pa-0">
-    <!-- 摄像头选择 -->
-    <v-row justify="center" class="mt-6">
-      <v-col cols="12" md="6" lg="4">
+  <v-dialog v-model="showModal" max-width="400">
+    <v-card>
+      <v-card-title class="headline">
+        高级设置
+      </v-card-title>
+      <v-divider />
+      <v-card-text>
+        <v-btn text @click="refreshDevices">
+          刷新摄像头列表
+        </v-btn>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn text @click="showModal = false">
+          关闭
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <v-toolbar color="primary" dark>
+    <v-toolbar-title>Face To Bot</v-toolbar-title>
+    <v-spacer />
+    <v-btn icon @click="showModal = !showModal">
+      <v-icon>mdi-cog</v-icon>
+    </v-btn>
+  </v-toolbar>
+
+  <v-container fluid class="p-0 w-full h-full flex flex-col">
+    <v-row class="mt-6" justify="center">
+      <v-col cols="12" md="6" lg="4" />
+    </v-row>
+
+    <v-card elevation="6" class="mt-4 mx-auto w-full max-w-[1080px] rounded-xl shadow-lg">
+      <div class="relative w-full pt-[56.25%] bg-black rounded-xl overflow-hidden">
+        <video
+          ref="videoRef"
+          class="absolute top-0 left-0 w-full h-full object-cover"
+          muted
+          playsinline
+          autoplay
+        />
+        <canvas
+          ref="canvasRef"
+          class="absolute top-0 left-0 w-full h-full object-cover"
+        />
+      </div>
+    </v-card>
+
+    <v-sheet class="fixed bottom-40 inset-x-0 mx-auto w-[90%] max-w-[720px] bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg p-4 shadow-xl rounded-2xl flex flex-col gap-4">
+      <v-row class="flex-wrap gap-2 justify-center">
         <v-select
           ref="selectRef"
           v-model="selectedDeviceId"
@@ -149,119 +167,63 @@ onBeforeUnmount(() => {
           placeholder="请选择摄像头"
           dense
           outlined
+          class="w-full sm:w-auto flex-1 px-2"
+          variant="outlined"
+          hide-details
           @change="handleChange"
         />
-      </v-col>
-    </v-row>
+      </v-row>
 
-    <div class="relative">
-      <video
-        ref="videoRef"
-        class="video-element"
-        muted
-        playsinline
-        autoplay
-      />
-      <canvas
-        ref="canvasRef"
-        class="canvas-element"
-      />
-    </div>
+      <v-row dense align="center" justify="center" class="flex-wrap gap-4">
+        <v-btn class="flex-1 min-w-[100px] h-[60px] shadow-none" @click="connectSerial">
+          <v-icon left>
+            mdi-power-plug
+          </v-icon>
+          打开串口
+        </v-btn>
+        <v-btn class="flex-1 min-w-[100px] h-[60px] shadow-none" @click="disconnect">
+          <v-icon left>
+            mdi-power-plug-off
+          </v-icon>
+          关闭串口
+        </v-btn>
+        <v-btn
+          v-if="!camRunning"
+          color="primary"
+          class="w-[60px] h-[60px] shadow-none"
+          variant="text"
+          @click="playBtnOnclick"
+        >
+          <v-icon size="28">
+            mdi-play
+          </v-icon>
+        </v-btn>
+        <v-btn
+          v-else
+          color="error"
+          class="w-[60px] h-[60px] shadow-none"
+          variant="text"
+          @click="stopPlayBtnOnclick"
+        >
+          <v-icon size="28">
+            mdi-stop
+          </v-icon>
+        </v-btn>
+      </v-row>
 
-    <!-- 控制按钮 -->
-    <v-row justify="center" class="controls">
-      <!-- <span>{{ debugText }}</span> -->
-      <v-btn
-        v-if="!camRunning"
-        color="primary"
-        large
-        rounded
-        @click="playBtnOnclick"
-      >
-        <v-icon left>
-          mdi-play
-        </v-icon>
-      </v-btn>
-      <v-btn
-        v-else
-        color="error"
-        large
-        rounded
-        @click="stopPlayBtnOnclick"
-      >
-        <v-icon left>
-          mdi-stop
-        </v-icon>
-      </v-btn>
-      <v-btn color="secondary" large rounded @click="showModal = !showModal">
-        <v-icon left>
-          mdi-cog
-        </v-icon>
-      </v-btn>
-      <v-btn large rounded @click="connectSerial">
-        <v-icon left>
-          mdi-ethernet
-        </v-icon>
-        打开串口
-      </v-btn>
-      <v-btn large rounded @click="disconnect">
-        <v-icon left>
-          mdi-ethernet-off
-        </v-icon>
-        关闭串口
-      </v-btn>
-    </v-row>
-
-    <!-- 串口命令输入 & 发送 -->
-    <v-row justify="center" class="mt-4">
-      <v-col cols="12" md="6" lg="4">
+      <!-- <v-row dense align="center" justify="center" class="flex-wrap gap-4">
         <v-text-field
           v-model="commandText"
           label="串口命令"
           placeholder="输入如 on、eyes_open、reset..."
           dense
           outlined
+          class="flex-1 min-w-[200px]"
         />
-      </v-col>
-      <v-col cols="12" md="2" lg="2">
-        <v-btn
-          color="primary"
-          large
-          block
-          @click="sendCommand(commandText)"
-        >
+        <v-btn color="primary" class="min-w-[100px] h-[48px]" rounded @click="sendCommand(commandText)">
           发送
         </v-btn>
-      </v-col>
-    </v-row>
+      </v-row> -->
+    </v-sheet>
   </v-container>
 </template>
-
-<style scoped>
-.video-element,
-.canvas-element {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  image-rendering: crisp-edges;
-}
-
-.video-element {
-  z-index: 1;
-}
-
-.canvas-element {
-  z-index: 2;
-  pointer-events: none;
-}
-
-.controls {
-  position: fixed;
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-</style>

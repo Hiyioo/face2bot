@@ -66,7 +66,6 @@ const servoConfigs = [
 ]
 
 const lastAngles = Object.fromEntries(servoConfigs.map(c => [c.pin, null]))
-let lastJawState = null
 let lastSentTime = 0
 
 const clamp = (v, min = 0, max = 1) => Math.max(min, Math.min(max, v))
@@ -149,10 +148,7 @@ watchEffect(() => {
     // 下巴张合
     const lipDelta = lm[IDX.lowerLip].y - lm[IDX.upperLip].y
     const jawState = lipDelta >= 0.07 ? 'jaw_open' : 'jaw_close'
-    if (jawState !== lastJawState) {
-      sendCommand(jawState)
-      lastJawState = jawState
-      await delay(1)
-    }
+    sendCommand(jawState)
+    await delay(1)
   })()
 })
