@@ -140,17 +140,17 @@ onBeforeUnmount(() => {
     </v-row>
 
     <v-card elevation="6" class="mt-4 mx-auto w-full max-w-[1080px] rounded-xl shadow-lg">
-      <div class="relative w-full pt-[56.25%] bg-black rounded-xl overflow-hidden">
+      <div class="pt-[56.25%] bg-black rounded-xl overflow-hidden">
         <video
           ref="videoRef"
-          class="absolute top-0 left-0 w-full h-full object-cover"
+          class="absolute top-0 left-0 object-cover"
           muted
           playsinline
           autoplay
         />
         <canvas
           ref="canvasRef"
-          class="absolute top-0 left-0 w-full h-full object-cover"
+          class="absolute top-0 left-0 object-cover"
         />
       </div>
     </v-card>
@@ -210,20 +210,6 @@ onBeforeUnmount(() => {
           </v-icon>
         </v-btn>
       </v-row>
-
-      <!-- <v-row dense align="center" justify="center" class="flex-wrap gap-4">
-        <v-text-field
-          v-model="commandText"
-          label="串口命令"
-          placeholder="输入如 on、eyes_open、reset..."
-          dense
-          outlined
-          class="flex-1 min-w-[200px]"
-        />
-        <v-btn color="primary" class="min-w-[100px] h-[48px]" rounded @click="sendCommand(commandText)">
-          发送
-        </v-btn>
-      </v-row> -->
     </v-sheet>
   </v-container>
 </template>
