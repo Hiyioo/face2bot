@@ -143,19 +143,19 @@ onBeforeUnmount(() => {
       <div class="pt-[56.25%] bg-black rounded-xl overflow-hidden">
         <video
           ref="videoRef"
-          class="absolute top-0 left-0 object-cover"
+          class="absolute top-0 left-0 object-cover w-full"
           muted
           playsinline
           autoplay
         />
         <canvas
           ref="canvasRef"
-          class="absolute top-0 left-0 object-cover"
+          class="absolute top-0 left-0 object-cover w-full"
         />
       </div>
     </v-card>
 
-    <v-sheet class="fixed bottom-40 inset-x-0 mx-auto w-[90%] max-w-[720px] bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg p-4 shadow-xl rounded-2xl flex flex-col gap-4">
+    <v-sheet class="fixed bottom-5 inset-x-0 mx-auto w-[90%] max-w-[720px] bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg p-4 pt-8 shadow-xl rounded-2xl flex flex-col gap-4">
       <v-row class="flex-wrap gap-2 justify-center">
         <v-select
           ref="selectRef"
