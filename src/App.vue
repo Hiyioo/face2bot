@@ -16,6 +16,10 @@ let resizeObserver = null
 const isConnected = ref(false)
 
 async function playBtnOnclick() {
+  videoDevices.value = await getVideoDevices()
+  if (videoDevices.value.length > 0) {
+    selectedDeviceId.value = videoDevices.value[0].deviceId
+  }
   if (!selectedDeviceId.value) {
     console.warn('⚠️ 未选择摄像头设备')
     return
@@ -41,9 +45,14 @@ function adjustCanvasSize() {
 }
 
 async function connectSerial() {
-  await connect(200000)
+  await connect(115200)
   await sendCommand('reset')
   isConnected.value = true
+}
+
+async function disconnectSerial() {
+  await disconnect()
+  isConnected.value = false
 }
 
 function observeVideoSize() {
@@ -60,6 +69,7 @@ function stopPlayBtnOnclick() {
   }
   stopFaceCapture(canvasRef.value)
   stopCamera(selectedDeviceId.value)
+  sendCommand('reset')
   camRunning.value = false
 }
 
@@ -87,10 +97,6 @@ async function refreshDevices() {
 }
 
 onMounted(async () => {
-  videoDevices.value = await getVideoDevices()
-  if (videoDevices.value.length > 0) {
-    selectedDeviceId.value = videoDevices.value[0].deviceId
-  }
   observeVideoSize()
   window.sendCommand = sendCommand
 })
@@ -183,7 +189,7 @@ onBeforeUnmount(() => {
           </v-icon>
           打开串口
         </v-btn>
-        <v-btn :disabled="!isConnected" class="flex-1 min-w-[100px] h-[60px] shadow-none" @click="disconnect">
+        <v-btn :disabled="!isConnected" class="flex-1 min-w-[100px] h-[60px] shadow-none" @click="disconnectSerial">
           <v-icon left>
             mdi-power-plug-off
           </v-icon>
