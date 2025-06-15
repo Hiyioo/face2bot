@@ -1,6 +1,6 @@
 import { sendCommand } from '@/service/serial'
 import { faceLandmarks } from '@/service/vision'
-import { watchEffect } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 const IDX = Object.freeze({
   leftEyeOuter: 359,
@@ -75,6 +75,8 @@ export function setConfig(config) {
 export function getConfig() {
   return servoConfigs
 }
+
+export const delayMS = ref(1)
 
 const lastAngles = Object.fromEntries(servoConfigs.map(c => [c.pin, null]))
 let lastSentTime = 0
@@ -152,7 +154,7 @@ watchEffect(() => {
       if (angle !== lastAngles[cfg.pin]) {
         sendCommand(`${cfg.prefix}:${cfg.pin},${angle}`)
         lastAngles[cfg.pin] = angle
-        await delay(10)
+        await delay(delayMS.value)
       }
     }
   })()

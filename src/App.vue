@@ -1,6 +1,6 @@
 <script setup>
 import { getVideoDevices, startCamera, stopCamera } from '@/service/camera'
-import { getConfig, setConfig } from '@/service/face-control'
+import { delayMS, getConfig, setConfig } from '@/service/face-control'
 import { parseConfig } from '@/service/face-control/parseConfig'
 import { connect, disconnect, sendCommand } from '@/service/serial'
 import { startFaceCapture, stopFaceCapture } from '@/service/vision'
@@ -16,6 +16,7 @@ const videoDevices = ref([])
 let resizeObserver = null
 const isConnected = ref(false)
 const isLoading = ref(false)
+const baudRate = ref(200000)
 
 // 新增：配置文本和解析结果
 const configText = ref('')
@@ -108,7 +109,7 @@ function adjustCanvasSize() {
 }
 
 async function connectSerial() {
-  await connect(115200)
+  await connect(baudRate.value)
   await sendCommand('reset')
   isConnected.value = true
 }
@@ -182,6 +183,27 @@ onBeforeUnmount(() => {
 
       <v-card-text>
         <!-- 文本编辑区 -->
+        <v-number-input
+          v-model:model-value="delayMS"
+          :reverse="false"
+          control-variant="split"
+          label="command延时"
+          :hide-input="false"
+          :inset="false"
+          max="1000"
+          min="0"
+        />
+
+        <v-number-input
+          v-model:model-value="baudRate"
+          :reverse="false"
+          control-variant="split"
+          label="波特率"
+          :hide-input="false"
+          :inset="false"
+          max="300000"
+          min="0"
+        />
         <v-textarea
           v-model="configText"
           label="Servo 配置（每行以分号结尾）"
