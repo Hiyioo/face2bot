@@ -33,6 +33,18 @@ function applyConfig() {
   }
 }
 
+const tableHeaders = [
+  { title: 'idx', value: 'idx' },
+  { title: 'ref', value: 'ref' },
+  { title: 'axis', value: 'axis' },
+  { title: 'pin', value: 'pin' },
+  { title: 'closed', value: 'closed' },
+  { title: 'open', value: 'open' },
+  { title: 'dMin', value: 'dMin' },
+  { title: 'dMax', value: 'dMax' },
+  { title: 'prefix', value: 'prefix' },
+]
+
 function configsToText(configs) {
   return configs
     .map(({ idx, ref, axis, pin, closed, open, dMin, dMax, prefix }) =>
@@ -41,7 +53,6 @@ function configsToText(configs) {
     .join('\n')
 }
 
-/** 2. 每次打开弹窗，就把内存里的 config 塞进 textarea */
 watch(showModal, (open) => {
   if (open) {
     const current = getConfig() // 取最新的配置对象数组
@@ -49,6 +60,10 @@ watch(showModal, (open) => {
     parsedConfigs.value = current // 顺便当展示表的数据源
   }
 })
+
+watch(parsedConfigs, (newVal) => {
+  configText.value = configsToText(newVal)
+}, { deep: true })
 
 async function playBtnOnclick() {
   isLoading.value = true
@@ -147,7 +162,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <v-dialog v-model="showModal" max-width="700px">
+  <v-dialog v-model="showModal" max-width="1000px">
     <v-card>
       <v-card-title class="headline">
         高级设置
@@ -155,38 +170,123 @@ onBeforeUnmount(() => {
       <v-divider />
 
       <v-card-text>
-        <!-- 新增：配置输入区 -->
+        <!-- 文本编辑区 -->
         <v-textarea
           v-model="configText"
-          label="Servo 配置（分号结尾）"
-          rows="8"
+          label="Servo 配置（每行以分号结尾）"
+          rows="6"
           outlined
-          class="mt-4"
         />
 
-        <!-- 新增：应用配置按钮 -->
         <v-btn color="primary" class="mt-2" @click="applyConfig">
           应用配置
         </v-btn>
 
-        <!-- 新增：显示解析结果 -->
+        <!-- 可编辑表格 -->
         <v-data-table
           v-if="parsedConfigs.length"
           :items="parsedConfigs"
-          :headers="[
-            { title: 'idx', value: 'idx' },
-            { title: 'ref', value: 'ref' },
-            { title: 'axis', value: 'axis' },
-            { title: 'pin', value: 'pin' },
-            { title: 'closed', value: 'closed' },
-            { title: 'open', value: 'open' },
-            { title: 'dMin', value: 'dMin' },
-            { title: 'dMax', value: 'dMax' },
-            { title: 'prefix', value: 'prefix' },
-          ]"
+          :headers="tableHeaders"
           dense
           class="mt-4"
-        />
+        >
+          <!-- idx 列 -->
+          <template #item.idx="{ item }">
+            <v-text-field
+              v-model="item.idx"
+              dense
+              hide-details
+              variant="plain"
+              style="width: 130px;"
+            />
+          </template>
+
+          <!-- ref 列 -->
+          <template #item.ref="{ item }">
+            <v-text-field
+              v-model="item.ref"
+              dense
+              hide-details
+              variant="plain"
+              style="width: 130px;"
+            />
+          </template>
+
+          <!-- axis 列 -->
+          <template #item.axis="{ item }">
+            <v-text-field
+              v-model="item.axis"
+              dense
+              hide-details
+              variant="plain"
+            />
+          </template>
+
+          <!-- pin 列 -->
+          <template #item.pin="{ item }">
+            <v-text-field
+              v-model.number="item.pin"
+              type="number"
+              dense
+              hide-details
+              variant="plain"
+            />
+          </template>
+
+          <!-- closed 列 -->
+          <template #item.closed="{ item }">
+            <v-text-field
+              v-model.number="item.closed"
+              type="number"
+              dense
+              hide-details
+              variant="plain"
+            />
+          </template>
+
+          <!-- open 列 -->
+          <template #item.open="{ item }">
+            <v-text-field
+              v-model.number="item.open"
+              type="number"
+              dense
+              hide-details
+              variant="plain"
+            />
+          </template>
+
+          <!-- dMin 列 -->
+          <template #item.dMin="{ item }">
+            <v-text-field
+              v-model.number="item.dMin"
+              type="number"
+              dense
+              hide-details
+              variant="plain"
+            />
+          </template>
+
+          <!-- dMax 列 -->
+          <template #item.dMax="{ item }">
+            <v-text-field
+              v-model.number="item.dMax"
+              type="number"
+              dense
+              hide-details
+              variant="plain"
+            />
+          </template>
+
+          <!-- prefix 列 -->
+          <template #item.prefix="{ item }">
+            <v-text-field
+              v-model="item.prefix"
+              dense
+              hide-details
+              variant="plain"
+            />
+          </template>
+        </v-data-table>
       </v-card-text>
 
       <v-card-actions>
