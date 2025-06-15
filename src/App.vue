@@ -13,6 +13,7 @@ const selectRef = ref(null)
 const selectedDeviceId = ref(null)
 const videoDevices = ref([])
 let resizeObserver = null
+const isConnected = ref(false)
 
 async function playBtnOnclick() {
   if (!selectedDeviceId.value) {
@@ -42,6 +43,7 @@ function adjustCanvasSize() {
 async function connectSerial() {
   await connect(200000)
   await sendCommand('reset')
+  isConnected.value = true
 }
 
 function observeVideoSize() {
@@ -175,13 +177,13 @@ onBeforeUnmount(() => {
       </v-row>
 
       <v-row dense align="center" justify="center" class="flex-wrap gap-4">
-        <v-btn class="flex-1 min-w-[100px] h-[60px] shadow-none" @click="connectSerial">
+        <v-btn :disabled="isConnected" class="flex-1 min-w-[100px] h-[60px] shadow-none" @click="connectSerial">
           <v-icon left>
             mdi-power-plug
           </v-icon>
           打开串口
         </v-btn>
-        <v-btn class="flex-1 min-w-[100px] h-[60px] shadow-none" @click="disconnect">
+        <v-btn :disabled="!isConnected" class="flex-1 min-w-[100px] h-[60px] shadow-none" @click="disconnect">
           <v-icon left>
             mdi-power-plug-off
           </v-icon>
