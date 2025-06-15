@@ -6,6 +6,10 @@ const streams = new Map() // 存储设备 ID -> MediaStream 映射
  */
 export async function getVideoDevices() {
   try {
+    // 第一步：主动申请一次权限
+    const tempStream = await navigator.mediaDevices.getUserMedia({ video: true })
+    tempStream.getTracks().forEach(track => track.stop()) // 关闭避免占用摄像头
+
     const devices = await navigator.mediaDevices.enumerateDevices()
     console.warn('可用设备:', devices)
     const videoDevices = devices.filter(d => d.kind === 'videoinput')
