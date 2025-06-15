@@ -33,9 +33,9 @@ async function playBtnOnclick() {
   }
   videoRef.value.srcObject = stream
   camRunning.value = true
-  videoRef.value.onloadedmetadata = () => {
+  videoRef.value.onloadedmetadata = async () => {
     adjustCanvasSize()
-    startFaceCapture(videoRef.value, canvasRef.value)
+    await startFaceCapture(videoRef.value, canvasRef.value)
     isLoading.value = false
   }
 }
