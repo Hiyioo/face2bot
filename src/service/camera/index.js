@@ -7,6 +7,7 @@ const streams = new Map() // 存储设备 ID -> MediaStream 映射
 export async function getVideoDevices() {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices()
+    console.warn('可用设备:', devices)
     const videoDevices = devices.filter(d => d.kind === 'videoinput')
 
     if (videoDevices.length === 0) {
