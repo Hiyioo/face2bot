@@ -35,16 +35,16 @@ const IDX = Object.freeze({
   zero: 0,
 })
 
-const servoConfigs = [
+let servoConfigs = [
   // 眉毛
   { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 5, closed: 45, open: 125, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
-  // // leftEyebrowConner 随着 leftEyebrow 一起动
+  // leftEyebrowConner 随着 leftEyebrow 一起动
   { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 7, closed: 130, open: 70, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
   { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 4, closed: 130, open: 70, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
   // rightEyebrowConner 随着 rightEyebrow 一起动
   { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 6, closed: 50, open: 125, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
 
-  // 眼部
+  // // 眼部
   { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'x', pin: 2, closed: 130, open: 50, dMin: 0.186, dMax: 0.312, prefix: 'servo_debug' },
   { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'y', pin: 3, closed: 90, open: 140, dMin: 0.132, dMax: 0.174, prefix: 'servo_debug' },
   { idx: 'rightLowerEyelid', ref: 'rightUpperEyelid', axis: 'y', pin: 11, closed: 80, open: 43, dMin: 0.1, dMax: 0.262, prefix: 'servo_debug' },
@@ -67,6 +67,14 @@ const servoConfigs = [
   // 嘴唇
   { idx: 'upperLip', ref: 'lowerLip', axis: 'distance', pin: 0, closed: 100, open: 70, dMin: 0.25, dMax: 1.05, prefix: 'slave_debug' },
 ]
+
+export function setConfig(config) {
+  servoConfigs = config
+}
+
+export function getConfig() {
+  return servoConfigs
+}
 
 const lastAngles = Object.fromEntries(servoConfigs.map(c => [c.pin, null]))
 let lastSentTime = 0

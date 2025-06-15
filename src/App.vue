@@ -1,9 +1,10 @@
 <script setup>
 import { getVideoDevices, startCamera, stopCamera } from '@/service/camera'
+import { getConfig, setConfig } from '@/service/face-control'
+import { parseConfig } from '@/service/face-control/parseConfig'
 import { connect, disconnect, sendCommand } from '@/service/serial'
 import { startFaceCapture, stopFaceCapture } from '@/service/vision'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import '@/service/face-control'
 
 const showModal = ref(false)
 const camRunning = ref(false)
@@ -15,6 +16,39 @@ const videoDevices = ref([])
 let resizeObserver = null
 const isConnected = ref(false)
 const isLoading = ref(false)
+
+// 新增：配置文本和解析结果
+const configText = ref('')
+const parsedConfigs = ref([])
+
+/** 从 textarea 读取并解析、应用到 face-control */
+function applyConfig() {
+  try {
+    const cfg = parseConfig(configText.value)
+    setConfig(cfg)
+    parsedConfigs.value = cfg
+  } catch (e) {
+    console.error('配置解析失败:', e)
+    // 你可以加一个 toast 提示用户
+  }
+}
+
+function configsToText(configs) {
+  return configs
+    .map(({ idx, ref, axis, pin, closed, open, dMin, dMax, prefix }) =>
+      `${idx} ${ref} ${axis} ${pin} ${closed} ${open} ${dMin} ${dMax} ${prefix};`,
+    )
+    .join('\n')
+}
+
+/** 2. 每次打开弹窗，就把内存里的 config 塞进 textarea */
+watch(showModal, (open) => {
+  if (open) {
+    const current = getConfig() // 取最新的配置对象数组
+    configText.value = configsToText(current)
+    parsedConfigs.value = current // 顺便当展示表的数据源
+  }
+})
 
 async function playBtnOnclick() {
   isLoading.value = true
@@ -95,10 +129,6 @@ async function handleChange(newId) {
   }
 }
 
-async function refreshDevices() {
-  videoDevices.value = await getVideoDevices()
-}
-
 onMounted(async () => {
   observeVideoSize()
   window.sendCommand = sendCommand
@@ -117,17 +147,48 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <v-dialog v-model="showModal" max-width="400">
+  <v-dialog v-model="showModal" max-width="700px">
     <v-card>
       <v-card-title class="headline">
         高级设置
       </v-card-title>
       <v-divider />
+
       <v-card-text>
-        <v-btn text @click="refreshDevices">
-          刷新摄像头列表
+        <!-- 新增：配置输入区 -->
+        <v-textarea
+          v-model="configText"
+          label="Servo 配置（分号结尾）"
+          rows="8"
+          outlined
+          class="mt-4"
+        />
+
+        <!-- 新增：应用配置按钮 -->
+        <v-btn color="primary" class="mt-2" @click="applyConfig">
+          应用配置
         </v-btn>
+
+        <!-- 新增：显示解析结果 -->
+        <v-data-table
+          v-if="parsedConfigs.length"
+          :items="parsedConfigs"
+          :headers="[
+            { title: 'idx', value: 'idx' },
+            { title: 'ref', value: 'ref' },
+            { title: 'axis', value: 'axis' },
+            { title: 'pin', value: 'pin' },
+            { title: 'closed', value: 'closed' },
+            { title: 'open', value: 'open' },
+            { title: 'dMin', value: 'dMin' },
+            { title: 'dMax', value: 'dMax' },
+            { title: 'prefix', value: 'prefix' },
+          ]"
+          dense
+          class="mt-4"
+        />
       </v-card-text>
+
       <v-card-actions>
         <v-spacer />
         <v-btn text @click="showModal = false">
