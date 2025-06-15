@@ -27,9 +27,9 @@ function applyConfig() {
     const cfg = parseConfig(configText.value)
     setConfig(cfg)
     parsedConfigs.value = cfg
+    localStorage.setItem('servoConfigs', JSON.stringify(cfg))
   } catch (e) {
-    console.error('配置解析失败:', e)
-    // 你可以加一个 toast 提示用户
+    console.error('配置解析失败', e)
   }
 }
 
@@ -55,12 +55,23 @@ function configsToText(configs) {
 
 watch(showModal, (open) => {
   if (open) {
-    const current = getConfig() // 取最新的配置对象数组
+    const saved = localStorage.getItem('servoConfigs')
+    if (saved) {
+      try {
+        const arr = JSON.parse(saved)
+        parsedConfigs.value = arr
+        configText.value = configsToText(arr)
+        return
+      } catch {}
+    }
+    // fallback: 从 service 中读取
+    const current = getConfig()
+    parsedConfigs.value = current
     configText.value = configsToText(current)
-    parsedConfigs.value = current // 顺便当展示表的数据源
   }
 })
 
+// 表格数据变动时，同步回文本
 watch(parsedConfigs, (newVal) => {
   configText.value = configsToText(newVal)
 }, { deep: true })
