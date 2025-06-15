@@ -37,32 +37,35 @@ const IDX = Object.freeze({
 
 const servoConfigs = [
   // 眉毛
-  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 5, closed: 70, open: 110, dMin: 0.218, dMax: 0.258, prefix: 'servo_debug' },
-  // leftEyebrowConner 随着 leftEyebrow 一起动
-  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 7, closed: 140, open: 90, dMin: 0.218, dMax: 0.258, prefix: 'servo_debug' },
-  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 4, closed: 80, open: 50, dMin: 0.218, dMax: 0.258, prefix: 'servo_debug' },
+  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 5, closed: 45, open: 125, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
+  // // leftEyebrowConner 随着 leftEyebrow 一起动
+  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 7, closed: 130, open: 70, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
+  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 4, closed: 130, open: 70, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
   // rightEyebrowConner 随着 rightEyebrow 一起动
-  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 6, closed: 60, open: 110, dMin: 0.218, dMax: 0.258, prefix: 'servo_debug' },
+  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 6, closed: 50, open: 125, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
 
   // 眼部
-  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'x', pin: 2, closed: 118, open: 40, dMin: 0.186, dMax: 0.312, prefix: 'servo_debug' },
-  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'y', pin: 3, closed: 90, open: 138, dMin: 0.132, dMax: 0.174, prefix: 'servo_debug' },
-  { idx: 'leftLowerEyelid', ref: 'leftUpperEyelid', axis: 'y', pin: 11, closed: 70, open: 12, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
-  { idx: 'leftUpperEyelid', ref: 'leftLowerEyelid', axis: 'y', pin: 10, closed: 50, open: 170, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
-  { idx: 'rightLowerEyelid', ref: 'rightUpperEyelid', axis: 'y', pin: 13, closed: 10, open: 50, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
-  { idx: 'rightUpperEyelid', ref: 'rightLowerEyelid', axis: 'y', pin: 12, closed: 160, open: 10, dMin: 0.145, dMax: 0.235, prefix: 'servo_debug' },
+  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'x', pin: 2, closed: 130, open: 50, dMin: 0.186, dMax: 0.312, prefix: 'servo_debug' },
+  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'y', pin: 3, closed: 90, open: 140, dMin: 0.132, dMax: 0.174, prefix: 'servo_debug' },
+  { idx: 'rightLowerEyelid', ref: 'rightUpperEyelid', axis: 'y', pin: 11, closed: 80, open: 43, dMin: 0.1, dMax: 0.262, prefix: 'servo_debug' },
+  { idx: 'rightUpperEyelid', ref: 'rightLowerEyelid', axis: 'y', pin: 10, closed: 90, open: 180, dMin: 0.1, dMax: 0.244, prefix: 'servo_debug' },
+  { idx: 'leftLowerEyelid', ref: 'leftUpperEyelid', axis: 'y', pin: 13, closed: 80, open: 134, dMin: 0.1, dMax: 0.262, prefix: 'servo_debug' },
+  { idx: 'leftUpperEyelid', ref: 'leftLowerEyelid', axis: 'y', pin: 12, closed: 110, open: 20, dMin: 0.1, dMax: 0.244, prefix: 'servo_debug' },
 
   // mouth
-  { idx: 'rightUpperMouth', ref: 'zero', axis: 'distance', pin: 6, closed: 57, open: 75, dMin: 0.31, dMax: 0.37, prefix: 'slave_debug' },
-  { idx: 'rightLowerMouth', ref: 'zero', axis: 'distance', pin: 7, closed: 100, open: 70, dMin: 0.48, dMax: 0.6, prefix: 'slave_debug' },
-  { idx: 'leftUpperMouth', ref: 'zero', axis: 'distance', pin: 8, closed: 100, open: 80, dMin: 0.3, dMax: 0.39, prefix: 'slave_debug' },
-  { idx: 'leftLowerMouth', ref: 'zero', axis: 'distance', pin: 9, closed: 110, open: 140, dMin: 0.49, dMax: 0.7, prefix: 'slave_debug' },
+  { idx: 'rightUpperMouth', ref: 'zero', axis: 'distance', pin: 6, closed: 40, open: 130, dMin: 0.31, dMax: 0.37, prefix: 'slave_debug' },
+  { idx: 'rightLowerMouth', ref: 'zero', axis: 'distance', pin: 7, closed: 120, open: 40, dMin: 0.48, dMax: 0.6, prefix: 'slave_debug' },
+  { idx: 'leftUpperMouth', ref: 'zero', axis: 'distance', pin: 8, closed: 135, open: 50, dMin: 0.3, dMax: 0.39, prefix: 'slave_debug' },
+  { idx: 'leftLowerMouth', ref: 'zero', axis: 'distance', pin: 9, closed: 92, open: 150, dMin: 0.49, dMax: 0.7, prefix: 'slave_debug' },
 
   // cheek
-  { idx: 'rightUpperCheek', ref: 'zero', axis: 'distance', pin: 3, closed: 20, open: 60, dMin: 0.58, dMax: 0.64, prefix: 'slave_debug' },
-  { idx: 'rightLowerCheek', ref: 'zero', axis: 'distance', pin: 2, closed: 140, open: 60, dMin: 0.68, dMax: 0.73, prefix: 'slave_debug' },
-  { idx: 'leftUpperCheek', ref: 'zero', axis: 'distance', pin: 5, closed: 160, open: 70, dMin: 0.54, dMax: 0.61, prefix: 'slave_debug' },
-  { idx: 'leftLowerCheek', ref: 'zero', axis: 'distance', pin: 4, closed: 70, open: 160, dMin: 0.65, dMax: 0.75, prefix: 'slave_debug' },
+  { idx: 'rightUpperCheek', ref: 'zero', axis: 'distance', pin: 3, closed: 20, open: 120, dMin: 0.58, dMax: 0.64, prefix: 'slave_debug' },
+  { idx: 'rightLowerCheek', ref: 'zero', axis: 'distance', pin: 2, closed: 125, open: 35, dMin: 0.68, dMax: 0.73, prefix: 'slave_debug' },
+  { idx: 'leftUpperCheek', ref: 'zero', axis: 'distance', pin: 5, closed: 70, open: 160, dMin: 0.54, dMax: 0.61, prefix: 'slave_debug' },
+  { idx: 'leftLowerCheek', ref: 'zero', axis: 'distance', pin: 4, closed: 140, open: 62, dMin: 0.65, dMax: 0.75, prefix: 'slave_debug' },
+
+  // 嘴唇
+  { idx: 'upperLip', ref: 'lowerLip', axis: 'distance', pin: 0, closed: 100, open: 70, dMin: 0.25, dMax: 1.05, prefix: 'slave_debug' },
 ]
 
 const lastAngles = Object.fromEntries(servoConfigs.map(c => [c.pin, null]))
@@ -133,22 +136,16 @@ watchEffect(() => {
       const m = 0.001
       const b = 0.102
       const normCorrected = normDelta - m * roll + b
-      // if (cfg.idx === 'rightEyebrow') {
-      //   console.log(normCorrected)
-      // }
+      if (cfg.idx === 'upperLip') {
+        console.log(normCorrected)
+      }
 
       const angle = Math.round(map(normCorrected, cfg.dMin, cfg.dMax, cfg.closed, cfg.open))
       if (angle !== lastAngles[cfg.pin]) {
         sendCommand(`${cfg.prefix}:${cfg.pin},${angle}`)
         lastAngles[cfg.pin] = angle
-        await delay(1)
+        await delay(10)
       }
     }
-
-    // 下巴张合
-    const lipDelta = lm[IDX.lowerLip].y - lm[IDX.upperLip].y
-    const jawState = lipDelta >= 0.07 ? 'jaw_open' : 'jaw_close'
-    sendCommand(jawState)
-    await delay(1)
   })()
 })
