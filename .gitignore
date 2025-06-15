@@ -23,5 +23,5 @@ dist-ssr
 *.sw?
 
 # vision
-public/face_landmarker.task
+# public/face_landmarker.task
 public/mediapipe
