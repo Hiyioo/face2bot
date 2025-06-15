@@ -190,8 +190,8 @@ onBeforeUnmount(() => {
           label="command延时"
           :hide-input="false"
           :inset="false"
-          max="1000"
-          min="0"
+          :max="1000"
+          :min="0"
         />
 
         <v-number-input
@@ -201,8 +201,8 @@ onBeforeUnmount(() => {
           label="波特率"
           :hide-input="false"
           :inset="false"
-          max="300000"
-          min="0"
+          :max="300000"
+          :min="0"
         />
         <v-textarea
           v-model="configText"
@@ -252,6 +252,7 @@ onBeforeUnmount(() => {
               dense
               hide-details
               variant="plain"
+              style="width: 70px;"
             />
           </template>
 
@@ -317,6 +318,7 @@ onBeforeUnmount(() => {
               dense
               hide-details
               variant="plain"
+              style="width: 10px;"
             />
           </template>
         </v-data-table>

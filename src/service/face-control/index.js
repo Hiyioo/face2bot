@@ -20,9 +20,9 @@ const IDX = Object.freeze({
   rightLowerEyelid: 145,
 
   leftUpperMouth: 391,
-  leftLowerMouth: 335,
-  rightUpperMouth: 163,
-  rightLowerMouth: 106,
+  leftLowerMouth: 314,
+  rightUpperMouth: 37,
+  rightLowerMouth: 84,
 
   rightUpperCheek: 207,
   rightLowerCheek: 214,
@@ -37,35 +37,35 @@ const IDX = Object.freeze({
 
 let servoConfigs = [
   // 眉毛
-  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 5, closed: 45, open: 125, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
+  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 5, closed: 45, open: 125, dMin: 0.219, dMax: 0.279, prefix: 'U' },
   // leftEyebrowConner 随着 leftEyebrow 一起动
-  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 7, closed: 130, open: 70, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
-  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 4, closed: 130, open: 70, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
+  { idx: 'leftEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 7, closed: 130, open: 70, dMin: 0.219, dMax: 0.279, prefix: 'U' },
+  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 4, closed: 130, open: 70, dMin: 0.219, dMax: 0.279, prefix: 'U' },
   // rightEyebrowConner 随着 rightEyebrow 一起动
-  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 6, closed: 50, open: 125, dMin: 0.219, dMax: 0.279, prefix: 'servo_debug' },
+  { idx: 'rightEyebrow', ref: 'middleEyebrow', axis: 'y', pin: 6, closed: 50, open: 125, dMin: 0.219, dMax: 0.279, prefix: 'U' },
 
   // // 眼部
-  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'x', pin: 2, closed: 130, open: 50, dMin: 0.186, dMax: 0.312, prefix: 'servo_debug' },
-  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'y', pin: 3, closed: 90, open: 140, dMin: 0.132, dMax: 0.174, prefix: 'servo_debug' },
-  { idx: 'rightLowerEyelid', ref: 'rightUpperEyelid', axis: 'y', pin: 11, closed: 80, open: 43, dMin: 0.1, dMax: 0.262, prefix: 'servo_debug' },
-  { idx: 'rightUpperEyelid', ref: 'rightLowerEyelid', axis: 'y', pin: 10, closed: 90, open: 180, dMin: 0.1, dMax: 0.244, prefix: 'servo_debug' },
-  { idx: 'leftLowerEyelid', ref: 'leftUpperEyelid', axis: 'y', pin: 13, closed: 80, open: 134, dMin: 0.1, dMax: 0.262, prefix: 'servo_debug' },
-  { idx: 'leftUpperEyelid', ref: 'leftLowerEyelid', axis: 'y', pin: 12, closed: 110, open: 20, dMin: 0.1, dMax: 0.244, prefix: 'servo_debug' },
+  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'x', pin: 2, closed: 130, open: 50, dMin: 0.186, dMax: 0.312, prefix: 'U' },
+  { idx: 'leftEyeball', ref: 'leftEyeOuter', axis: 'y', pin: 3, closed: 90, open: 140, dMin: 0.132, dMax: 0.174, prefix: 'U' },
+  { idx: 'rightLowerEyelid', ref: 'rightUpperEyelid', axis: 'y', pin: 11, closed: 80, open: 43, dMin: 0.1, dMax: 0.262, prefix: 'U' },
+  { idx: 'rightUpperEyelid', ref: 'rightLowerEyelid', axis: 'y', pin: 10, closed: 90, open: 180, dMin: 0.1, dMax: 0.244, prefix: 'U' },
+  { idx: 'leftLowerEyelid', ref: 'leftUpperEyelid', axis: 'y', pin: 13, closed: 80, open: 134, dMin: 0.1, dMax: 0.262, prefix: 'U' },
+  { idx: 'leftUpperEyelid', ref: 'leftLowerEyelid', axis: 'y', pin: 12, closed: 110, open: 20, dMin: 0.1, dMax: 0.244, prefix: 'U' },
 
   // mouth
-  { idx: 'rightUpperMouth', ref: 'zero', axis: 'distance', pin: 6, closed: 40, open: 130, dMin: 0.31, dMax: 0.37, prefix: 'slave_debug' },
-  { idx: 'rightLowerMouth', ref: 'zero', axis: 'distance', pin: 7, closed: 120, open: 40, dMin: 0.48, dMax: 0.6, prefix: 'slave_debug' },
-  { idx: 'leftUpperMouth', ref: 'zero', axis: 'distance', pin: 8, closed: 135, open: 50, dMin: 0.3, dMax: 0.39, prefix: 'slave_debug' },
-  { idx: 'leftLowerMouth', ref: 'zero', axis: 'distance', pin: 9, closed: 92, open: 150, dMin: 0.49, dMax: 0.7, prefix: 'slave_debug' },
+  { idx: 'rightUpperMouth', ref: 'zero', axis: 'distance', pin: 6, closed: 40, open: 130, dMin: 0.18, dMax: 0.23, prefix: 'F' },
+  { idx: 'rightLowerMouth', ref: 'zero', axis: 'distance', pin: 7, closed: 120, open: 40, dMin: 0.39, dMax: 0.94, prefix: 'F' },
+  { idx: 'leftUpperMouth', ref: 'zero', axis: 'distance', pin: 8, closed: 135, open: 50, dMin: 0.18, dMax: 0.23, prefix: 'F' },
+  { idx: 'leftLowerMouth', ref: 'zero', axis: 'distance', pin: 9, closed: 92, open: 150, dMin: 0.39, dMax: 0.94, prefix: 'F' },
 
   // cheek
-  { idx: 'rightUpperCheek', ref: 'zero', axis: 'distance', pin: 3, closed: 20, open: 120, dMin: 0.58, dMax: 0.64, prefix: 'slave_debug' },
-  { idx: 'rightLowerCheek', ref: 'zero', axis: 'distance', pin: 2, closed: 125, open: 35, dMin: 0.68, dMax: 0.73, prefix: 'slave_debug' },
-  { idx: 'leftUpperCheek', ref: 'zero', axis: 'distance', pin: 5, closed: 70, open: 160, dMin: 0.54, dMax: 0.61, prefix: 'slave_debug' },
-  { idx: 'leftLowerCheek', ref: 'zero', axis: 'distance', pin: 4, closed: 140, open: 62, dMin: 0.65, dMax: 0.75, prefix: 'slave_debug' },
+  { idx: 'upperLip', ref: 'lowerLip', axis: 'distance', pin: 3, closed: 20, open: 120, dMin: 0.58, dMax: 0.64, prefix: 'F' },
+  { idx: 'upperLip', ref: 'lowerLip', axis: 'distance', pin: 2, closed: 125, open: 35, dMin: 0.68, dMax: 0.73, prefix: 'F' },
+  { idx: 'upperLip', ref: 'lowerLip', axis: 'distance', pin: 5, closed: 70, open: 160, dMin: 0.54, dMax: 0.61, prefix: 'F' },
+  { idx: 'upperLip', ref: 'lowerLip', axis: 'distance', pin: 4, closed: 140, open: 62, dMin: 0.65, dMax: 0.75, prefix: 'F' },
 
   // 嘴唇
-  { idx: 'upperLip', ref: 'lowerLip', axis: 'distance', pin: 0, closed: 100, open: 70, dMin: 0.25, dMax: 1.05, prefix: 'slave_debug' },
+  { idx: 'upperLip', ref: 'lowerLip', axis: 'distance', pin: 0, closed: 100, open: 70, dMin: 0.25, dMax: 1.05, prefix: 'F' },
 ]
 
 export function setConfig(config) {
@@ -146,7 +146,7 @@ watchEffect(() => {
       const m = 0.001
       const b = 0.102
       const normCorrected = normDelta - m * roll + b
-      // if (cfg.idx === 'upperLip') {
+      // if (cfg.idx === 'rightUpperMouth') {
       //   console.log(normCorrected)
       // }
 

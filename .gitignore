@@ -25,3 +25,4 @@ dist-ssr
 # vision
 # public/face_landmarker.task
 public/mediapipe
+config.demo
