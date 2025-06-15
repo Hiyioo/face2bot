@@ -80,9 +80,6 @@ watch(parsedConfigs, (newVal) => {
 async function playBtnOnclick() {
   isLoading.value = true
   videoDevices.value = await getVideoDevices()
-  if (videoDevices.value.length > 0) {
-    selectedDeviceId.value = videoDevices.value[0].deviceId
-  }
   if (!selectedDeviceId.value) {
     console.warn('⚠️ 未选择摄像头设备')
     return
