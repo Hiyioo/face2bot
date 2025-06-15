@@ -14,8 +14,10 @@ const selectedDeviceId = ref(null)
 const videoDevices = ref([])
 let resizeObserver = null
 const isConnected = ref(false)
+const isLoading = ref(false)
 
 async function playBtnOnclick() {
+  isLoading.value = true
   videoDevices.value = await getVideoDevices()
   if (videoDevices.value.length > 0) {
     selectedDeviceId.value = videoDevices.value[0].deviceId
@@ -34,6 +36,7 @@ async function playBtnOnclick() {
   videoRef.value.onloadedmetadata = () => {
     adjustCanvasSize()
     startFaceCapture(videoRef.value, canvasRef.value)
+    isLoading.value = false
   }
 }
 
@@ -147,18 +150,35 @@ onBeforeUnmount(() => {
       <v-col cols="12" md="6" lg="4" />
     </v-row>
 
-    <v-card elevation="6" class="mt-4 mx-auto w-full max-w-[1080px] rounded-xl shadow-lg">
-      <div class="pt-[56.25%] bg-black rounded-xl overflow-hidden">
+    <v-card elevation="6" class="mt-4 mx-auto w-full max-w-[1080px] rounded-xl shadow-lg relative">
+      <v-overlay
+        :model-value="isLoading"
+        contained
+        class="d-flex justify-center align-center"
+        style="position: absolute; inset: 0;"
+      >
+        <div class="d-flex flex-column align-center justify-center">
+          <v-progress-circular indeterminate color="primary" size="48" />
+          <div class="mt-2 text-subtitle-2 text-primary">
+            模型加载中...
+          </div>
+        </div>
+      </v-overlay>
+
+      <div
+        class="relative w-full max-w-[1080px] aspect-video bg-black rounded-xl overflow-hidden mx-auto"
+        style="max-height: 60vh;"
+      >
         <video
           ref="videoRef"
-          class="absolute top-0 left-0 object-cover w-full"
+          class="absolute top-0 left-0 object-cover w-full h-full"
           muted
           playsinline
           autoplay
         />
         <canvas
           ref="canvasRef"
-          class="absolute top-0 left-0 object-cover w-full"
+          class="absolute top-0 left-0 object-cover w-full h-full"
         />
       </div>
     </v-card>
