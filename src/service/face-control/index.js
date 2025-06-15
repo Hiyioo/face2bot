@@ -136,9 +136,9 @@ watchEffect(() => {
       const m = 0.001
       const b = 0.102
       const normCorrected = normDelta - m * roll + b
-      if (cfg.idx === 'upperLip') {
-        console.log(normCorrected)
-      }
+      // if (cfg.idx === 'upperLip') {
+      //   console.log(normCorrected)
+      // }
 
       const angle = Math.round(map(normCorrected, cfg.dMin, cfg.dMax, cfg.closed, cfg.open))
       if (angle !== lastAngles[cfg.pin]) {
